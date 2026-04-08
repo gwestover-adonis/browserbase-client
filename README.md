@@ -1,73 +1,45 @@
-# React + TypeScript + Vite
+# Browserbase Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A local web client for browsing and inspecting [Browserbase](https://www.browserbase.com/) sessions. View session lists, metadata, logs, and debug info from your browser.
 
-Currently, two official plugins are available:
+## Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 18+
+- A [Browserbase](https://www.browserbase.com/) account and API key
 
-## React Compiler
+## Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone <repo-url>
+cd browserbase-client
+npm install
+cp .env.example .env
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Edit `.env` and add your Browserbase API key. You can find it in the [Browserbase dashboard](https://www.browserbase.com/settings).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Usage
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+This starts both the API proxy server (port 3002) and the Vite dev server (port 5173). Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Other commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start both server and client |
+| `npm run dev:server` | Start only the API proxy server |
+| `npm run dev:client` | Start only the Vite dev client |
+| `npm run build` | Type-check and build for production |
+| `npm run lint` | Run ESLint |
+
+## How it works
+
+The app runs a lightweight [Hono](https://hono.dev/) server that proxies requests to the Browserbase API, keeping your API key server-side. The React frontend talks only to the local proxy.
+
+## License
+
+[MIT](LICENSE)

@@ -1,10 +1,15 @@
 {
-  "name": "bb-scaffold",
+  "name": "browserbase-client",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "Local web client for browsing and inspecting Browserbase sessions",
+  "author": "Greg Westover",
+  "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently --names server,client --prefix-colors blue,green \"tsx watch src/server/index.ts\" \"vite\"",
+    "dev:client": "vite",
+    "dev:server": "tsx watch src/server/index.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
