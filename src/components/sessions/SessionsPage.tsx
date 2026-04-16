@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { RefreshCw, Search } from "lucide-react";
 import { listSessions } from "@/lib/api";
 import type { Session, SessionsQueryParams } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { SessionFilters } from "./SessionFilters";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { SessionFilters, type SessionFiltersHandle } from "./SessionFilters";
 import { SessionTable } from "./SessionTable";
 import { SessionDetail } from "./SessionDetail";
 import { columns } from "./columns";
@@ -21,6 +22,7 @@ export function SessionsPage() {
   const [lastQuery, setLastQuery] = useState<SessionsQueryParams | undefined>();
   const [propertyFilters, setPropertyFilters] = useState<PropertyFilters>(EMPTY_FILTERS);
   const { keyPaths, valuesForKey } = useMetadataSchema(sessions);
+  const filtersRef = useRef<SessionFiltersHandle>(null);
 
   const fetchSessions = useCallback(async (params?: SessionsQueryParams) => {
     setIsLoading(true);
@@ -54,23 +56,40 @@ export function SessionsPage() {
       <div className="flex items-end justify-between gap-4">
         <div className="flex-1">
           <SessionFilters
+            ref={filtersRef}
             onSearch={handleSearch}
-            isLoading={isLoading}
             propertyFilters={propertyFilters}
             onPropertyFiltersChange={setPropertyFilters}
             keyPaths={keyPaths}
             valuesForKey={valuesForKey}
           />
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleRefresh}
-          disabled={isLoading}
-          title="Refresh"
-        >
-          <RefreshCw className={`size-4 ${isLoading ? "animate-spin" : ""}`} />
-        </Button>
+        <div className="flex items-center gap-2">
+          {!isLoading && sessions.length > 0 && (
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              {sessions.length} session{sessions.length !== 1 ? "s" : ""}
+            </span>
+          )}
+          <Button onClick={() => filtersRef.current?.search()} disabled={isLoading}>
+            <Search className="mr-1.5 size-4" />
+            Search
+          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleRefresh}
+                  disabled={isLoading}
+                >
+                  <RefreshCw className={`size-4 ${isLoading ? "animate-spin" : ""}`} />
+                </Button>
+              }
+            />
+            <TooltipContent>Refresh</TooltipContent>
+          </Tooltip>
+        </div>
       </div>
 
       {error && (

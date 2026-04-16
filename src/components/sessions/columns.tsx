@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Session } from "@/lib/types";
 import { formatBytes, formatDuration, formatRelativeTime } from "@/lib/format";
 import { getSessionReplayUrl } from "@/lib/api";
+import { CopyableId } from "./CopyableId";
 
 const statusVariant: Record<
   string,
@@ -34,20 +35,14 @@ export const columns: ColumnDef<Session>[] = [
   {
     accessorKey: "id",
     header: "Session ID",
-    cell: ({ row }) => {
-      const id = row.getValue<string>("id");
-      return (
-        <span className="font-mono text-xs" title={id}>
-          {id.slice(0, 8)}...
-        </span>
-      );
-    },
+    cell: ({ row }) => <CopyableId id={row.getValue<string>("id")} truncate={8} />,
   },
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
       <Button
         variant="ghost"
+        className="-ml-2.5"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Created
@@ -79,6 +74,7 @@ export const columns: ColumnDef<Session>[] = [
     header: ({ column }) => (
       <Button
         variant="ghost"
+        className="-ml-2.5"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Duration
@@ -118,6 +114,7 @@ export const columns: ColumnDef<Session>[] = [
     header: ({ column }) => (
       <Button
         variant="ghost"
+        className="-ml-2.5"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Proxy

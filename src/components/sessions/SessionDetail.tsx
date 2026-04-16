@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Copy, Check } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { CopyableId } from "./CopyableId";
 import { JsonView, darkStyles, defaultStyles } from "react-json-view-lite";
 import "react-json-view-lite/dist/index.css";
 import {
@@ -48,30 +49,6 @@ function DetailRow({
   );
 }
 
-function CopyableId({ id }: { id: string }) {
-  const [copied, setCopied] = useState(false);
-
-  function handleCopy() {
-    navigator.clipboard.writeText(id);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
-
-  return (
-    <button
-      onClick={handleCopy}
-      className="inline-flex items-center gap-1.5 font-mono text-xs hover:text-primary"
-      title="Copy full ID"
-    >
-      <span>{id.slice(0, 12)}...</span>
-      {copied ? (
-        <Check className="size-3 text-green-600" />
-      ) : (
-        <Copy className="size-3" />
-      )}
-    </button>
-  );
-}
 
 export function SessionDetail({ session, open, onClose }: SessionDetailProps) {
   const [fullSession, setFullSession] = useState<Session | null>(null);
