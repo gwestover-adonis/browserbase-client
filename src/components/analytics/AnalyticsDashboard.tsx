@@ -39,6 +39,7 @@ function formatAvgDuration(sessions: Session[]): string {
   return `${(min / 60).toFixed(1)}h`;
 }
 
+
 export function AnalyticsDashboard({
   sessions,
   statusFilter,
