@@ -59,9 +59,9 @@ export function StatusChart({ data }: StatusChartProps) {
                   color: "var(--popover-foreground)",
                   fontSize: "0.75rem",
                 }}
-                formatter={(value: number, name: string) => [
-                  `${value} (${((value / total) * 100).toFixed(1)}%)`,
-                  name,
+                formatter={(value, name) => [
+                  `${value} (${((Number(value) / total) * 100).toFixed(1)}%)`,
+                  String(name),
                 ]}
               />
               {/* Center label */}

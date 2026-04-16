@@ -62,7 +62,7 @@ export function VolumeChart({ data }: VolumeChartProps) {
               axisLine={false}
             />
             <Tooltip
-              labelFormatter={formatDateLabel}
+              labelFormatter={(label) => formatDateLabel(String(label))}
               contentStyle={{
                 backgroundColor: "var(--popover)",
                 borderColor: "var(--border)",

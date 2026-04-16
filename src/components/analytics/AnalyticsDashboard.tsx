@@ -7,12 +7,17 @@ import {
   computeVolumeByDay,
   computeStatusBreakdown,
   computeDurationDistribution,
+  computeConcurrency,
 } from "@/lib/analytics";
+import { analyzeFrequency } from "@/lib/fft";
 import { formatBytes } from "@/lib/format";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { VolumeChart } from "./VolumeChart";
 import { StatusChart } from "./StatusChart";
 import { DurationChart } from "./DurationChart";
+import { MetadataGrouping } from "./MetadataGrouping";
+import { ConcurrencyChart } from "./ConcurrencyChart";
+import { FrequencyChart } from "./FrequencyChart";
 
 interface AnalyticsDashboardProps {
   sessions: Session[];
@@ -47,6 +52,11 @@ export function AnalyticsDashboard({
   const volume = useMemo(() => computeVolumeByDay(filtered), [filtered]);
   const statusBreakdown = useMemo(() => computeStatusBreakdown(filtered), [filtered]);
   const duration = useMemo(() => computeDurationDistribution(filtered), [filtered]);
+  const concurrency = useMemo(() => computeConcurrency(filtered), [filtered]);
+  const frequencyAnalysis = useMemo(() => {
+    if (!concurrency.rawMinutePeaks || concurrency.rawMinutePeaks.length < 30) return null;
+    return analyzeFrequency(concurrency.rawMinutePeaks, concurrency.rawMinutePeaks.length);
+  }, [concurrency.rawMinutePeaks]);
 
   const errorRate = useMemo(() => {
     if (filtered.length === 0) return 0;
@@ -96,6 +106,9 @@ export function AnalyticsDashboard({
           </CardContent>
         </Card>
       </div>
+      <ConcurrencyChart data={concurrency.data} summary={concurrency.summary} />
+      <FrequencyChart analysis={frequencyAnalysis} />
+      <MetadataGrouping sessions={filtered} />
     </div>
   );
 }

@@ -61,7 +61,7 @@ export function DurationChart({ data }: DurationChartProps) {
                 color: "var(--popover-foreground)",
                 fontSize: "0.75rem",
               }}
-              formatter={(value: number) => [`${value} session${value !== 1 ? "s" : ""}`, "Count"]}
+              formatter={(value) => [`${value} session${Number(value) !== 1 ? "s" : ""}`, "Count"]}
             />
             <Bar
               dataKey="count"
