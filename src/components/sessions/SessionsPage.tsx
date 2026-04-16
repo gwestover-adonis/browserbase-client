@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { RefreshCw, Search } from "lucide-react";
+import { RefreshCw, Search, TableProperties, BarChart3 } from "lucide-react";
 import { listSessions } from "@/lib/api";
 import type { Session, SessionsQueryParams } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { SessionFilters, type SessionFiltersHandle } from "./SessionFilters";
 import { SessionTable } from "./SessionTable";
 import { SessionDetail } from "./SessionDetail";
+import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
 import { columns } from "./columns";
 import type { PropertyFilters } from "@/lib/property-filters";
 import { EMPTY_FILTERS } from "@/lib/property-filters";
@@ -104,13 +106,36 @@ export function SessionsPage() {
           <span className="text-sm">Loading sessions...</span>
         </div>
       ) : (
-        <SessionTable
-          columns={columns}
-          data={sessions}
-          onRowClick={setSelectedSession}
-          statusFilter={statusFilter}
-          propertyFilters={propertyFilters}
-        />
+        <Tabs defaultValue="table">
+          <TabsList variant="line">
+            <TabsTrigger value="table">
+              <TableProperties className="size-3.5" />
+              Sessions
+            </TabsTrigger>
+            <TabsTrigger value="analytics">
+              <BarChart3 className="size-3.5" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="table">
+            <SessionTable
+              columns={columns}
+              data={sessions}
+              onRowClick={setSelectedSession}
+              statusFilter={statusFilter}
+              propertyFilters={propertyFilters}
+            />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AnalyticsDashboard
+              sessions={sessions}
+              statusFilter={statusFilter}
+              propertyFilters={propertyFilters}
+            />
+          </TabsContent>
+        </Tabs>
       )}
 
       <SessionDetail
