@@ -1,4 +1,4 @@
-import { Globe, Moon, Sun, Monitor } from "lucide-react";
+import { Globe, Moon, Sun, Monitor, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,9 +7,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/lib/use-theme";
+import { useProject } from "@/lib/use-project";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
+  const { projects, selected, setSelected, isLoading } = useProject();
 
   const ThemeIcon = theme === "dark" ? Moon : theme === "light" ? Sun : Monitor;
 
@@ -23,30 +25,56 @@ export function Header() {
           </h1>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="ghost" size="icon">
-                <ThemeIcon className="size-4" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setTheme("light")}>
-              <Sun className="mr-2 size-4" />
-              Light
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("dark")}>
-              <Moon className="mr-2 size-4" />
-              Dark
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("system")}>
-              <Monitor className="mr-2 size-4" />
-              System
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          {!isLoading && projects.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="outline" size="sm" className="gap-1.5">
+                    <span className="capitalize">{selected}</span>
+                    <ChevronDown className="size-3.5 opacity-50" />
+                  </Button>
+                }
+              />
+              <DropdownMenuContent align="end">
+                {projects.map((p) => (
+                  <DropdownMenuItem
+                    key={p.name}
+                    onClick={() => setSelected(p.name)}
+                    className={p.name === selected ? "font-medium text-primary" : ""}
+                  >
+                    <span className="capitalize">{p.name}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="ghost" size="icon">
+                  <ThemeIcon className="size-4" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              }
+            />
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                <Sun className="mr-2 size-4" />
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                <Moon className="mr-2 size-4" />
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                <Monitor className="mr-2 size-4" />
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

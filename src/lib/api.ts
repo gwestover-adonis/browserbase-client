@@ -4,11 +4,18 @@ import type {
   SessionDebugInfo,
   SessionsQueryParams,
 } from "./types";
+import { getSelectedProject } from "./project-state";
 
 const API_BASE = "/api";
 
 async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
+  const headers: Record<string, string> = {};
+  const project = getSelectedProject();
+  if (project) {
+    headers["X-BB-Project"] = project;
+  }
+
+  const res = await fetch(url, { headers });
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`API error ${res.status}: ${text}`);

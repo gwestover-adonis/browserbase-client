@@ -16,7 +16,15 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` and add your Browserbase API key. You can find it in the [Browserbase dashboard](https://www.browserbase.com/settings).
+Edit `.env` and add your Browserbase API keys. Each project gets its own environment variable using the naming convention `BROWSERBASE_API_KEY_<NAME>`:
+
+```env
+BROWSERBASE_API_KEY_DEVELOPMENT=bb_live_...
+BROWSERBASE_API_KEY_PRODUCTION=bb_live_...
+BROWSERBASE_API_KEY_STAGE=bb_live_...
+```
+
+The `<NAME>` suffix (e.g. `DEVELOPMENT`, `PRODUCTION`) becomes the project label shown in the UI dropdown. You need at least one key to start the server. You can find your API keys in the [Browserbase dashboard](https://www.browserbase.com/settings) under each project.
 
 ## Usage
 
