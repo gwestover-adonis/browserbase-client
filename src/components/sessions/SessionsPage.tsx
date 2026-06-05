@@ -1,12 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { RefreshCw, Search, TableProperties, BarChart3 } from "lucide-react";
 import { listSessions } from "@/lib/api";
 import type { Session, SessionsQueryParams } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { SessionFilters } from "./SessionFilters";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { SessionFilters, type SessionFiltersHandle } from "./SessionFilters";
 import { SessionTable } from "./SessionTable";
 import { SessionDetail } from "./SessionDetail";
+import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
 import { columns } from "./columns";
 import type { PropertyFilters } from "@/lib/property-filters";
 import { EMPTY_FILTERS } from "@/lib/property-filters";
@@ -21,6 +24,7 @@ export function SessionsPage() {
   const [lastQuery, setLastQuery] = useState<SessionsQueryParams | undefined>();
   const [propertyFilters, setPropertyFilters] = useState<PropertyFilters>(EMPTY_FILTERS);
   const { keyPaths, valuesForKey } = useMetadataSchema(sessions);
+  const filtersRef = useRef<SessionFiltersHandle>(null);
 
   const fetchSessions = useCallback(async (params?: SessionsQueryParams) => {
     setIsLoading(true);
@@ -54,23 +58,40 @@ export function SessionsPage() {
       <div className="flex items-end justify-between gap-4">
         <div className="flex-1">
           <SessionFilters
+            ref={filtersRef}
             onSearch={handleSearch}
-            isLoading={isLoading}
             propertyFilters={propertyFilters}
             onPropertyFiltersChange={setPropertyFilters}
             keyPaths={keyPaths}
             valuesForKey={valuesForKey}
           />
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleRefresh}
-          disabled={isLoading}
-          title="Refresh"
-        >
-          <RefreshCw className={`size-4 ${isLoading ? "animate-spin" : ""}`} />
-        </Button>
+        <div className="flex items-center gap-2">
+          {!isLoading && sessions.length > 0 && (
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              {sessions.length} session{sessions.length !== 1 ? "s" : ""}
+            </span>
+          )}
+          <Button onClick={() => filtersRef.current?.search()} disabled={isLoading}>
+            <Search className="mr-1.5 size-4" />
+            Search
+          </Button>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleRefresh}
+                  disabled={isLoading}
+                >
+                  <RefreshCw className={`size-4 ${isLoading ? "animate-spin" : ""}`} />
+                </Button>
+              }
+            />
+            <TooltipContent>Refresh</TooltipContent>
+          </Tooltip>
+        </div>
       </div>
 
       {error && (
@@ -85,13 +106,36 @@ export function SessionsPage() {
           <span className="text-sm">Loading sessions...</span>
         </div>
       ) : (
-        <SessionTable
-          columns={columns}
-          data={sessions}
-          onRowClick={setSelectedSession}
-          statusFilter={statusFilter}
-          propertyFilters={propertyFilters}
-        />
+        <Tabs defaultValue="table">
+          <TabsList variant="line">
+            <TabsTrigger value="table">
+              <TableProperties className="size-3.5" />
+              Sessions
+            </TabsTrigger>
+            <TabsTrigger value="analytics">
+              <BarChart3 className="size-3.5" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="table">
+            <SessionTable
+              columns={columns}
+              data={sessions}
+              onRowClick={setSelectedSession}
+              statusFilter={statusFilter}
+              propertyFilters={propertyFilters}
+            />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AnalyticsDashboard
+              sessions={sessions}
+              statusFilter={statusFilter}
+              propertyFilters={propertyFilters}
+            />
+          </TabsContent>
+        </Tabs>
       )}
 
       <SessionDetail

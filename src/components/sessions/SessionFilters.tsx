@@ -1,15 +1,9 @@
-import { useCallback, useState } from "react";
-import { Search, Code, LayoutGrid } from "lucide-react";
+import { useCallback, useImperativeHandle, useState, type Ref } from "react";
+import { Code, LayoutGrid } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { badgeVariants } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import type { SessionStatus } from "@/lib/types";
 import { MetadataQueryBuilder } from "./MetadataQueryBuilder";
 import { SessionPropertyFilters } from "./SessionPropertyFilters";
@@ -29,9 +23,20 @@ const STATUS_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "TIMED_OUT", label: "Timed Out" },
 ];
 
+const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  RUNNING: "default",
+  COMPLETED: "secondary",
+  ERROR: "destructive",
+  TIMED_OUT: "outline",
+};
+
+export interface SessionFiltersHandle {
+  search: () => void;
+}
+
 interface SessionFiltersProps {
+  ref?: Ref<SessionFiltersHandle>;
   onSearch: (params: { status?: SessionStatus; q?: string }) => void;
-  isLoading?: boolean;
   propertyFilters: PropertyFilters;
   onPropertyFiltersChange: (filters: PropertyFilters) => void;
   keyPaths: string[];
@@ -41,8 +46,8 @@ interface SessionFiltersProps {
 type QueryMode = "builder" | "raw";
 
 export function SessionFilters({
+  ref,
   onSearch,
-  isLoading,
   propertyFilters,
   onPropertyFiltersChange,
   keyPaths,
@@ -69,6 +74,8 @@ export function SessionFilters({
       q: getQueryString(),
     });
   }
+
+  useImperativeHandle(ref, () => ({ search: handleSearch }));
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter") handleSearch();
@@ -144,32 +151,32 @@ export function SessionFilters({
         onChange={onPropertyFiltersChange}
       />
 
-      <div className="flex items-end gap-3">
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium">Status</label>
-          <Select
-            value={status}
-            onValueChange={(val) => {
-              if (val !== null) setStatus(val);
-            }}
-          >
-            <SelectTrigger className="w-[160px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {STATUS_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium">Status</label>
+        <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {STATUS_OPTIONS.map((opt) => {
+              const isActive = status === opt.value;
+              const variant = isActive
+                ? (STATUS_VARIANT[opt.value] ?? "default")
+                : "outline";
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setStatus(opt.value)}
+                  className={cn(
+                    badgeVariants({ variant }),
+                    "cursor-pointer select-none",
+                    isActive && "ring-2 ring-ring ring-offset-1 ring-offset-background"
+                  )}
+                >
                   {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                </button>
+              );
+            })}
+          </div>
         </div>
-
-        <Button onClick={handleSearch} disabled={isLoading}>
-          <Search className="mr-1.5 size-4" />
-          Search
-        </Button>
       </div>
     </div>
   );
