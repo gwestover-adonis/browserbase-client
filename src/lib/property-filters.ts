@@ -15,9 +15,12 @@ export const KNOWN_REGIONS = [
   "ap-southeast-1",
 ] as const;
 
-export const EMPTY_FILTERS: PropertyFilters = {
-  regions: [...KNOWN_REGIONS],
-};
+export function defaultFilters(): PropertyFilters {
+  const d = new Date();
+  d.setDate(d.getDate() - 7);
+  const createdAfter = d.toISOString().slice(0, 10);
+  return { regions: [...KNOWN_REGIONS], createdAfter };
+}
 
 function isRegionFilterActive(regions: string[] | undefined): boolean {
   if (regions == null || regions.length === 0) return true;

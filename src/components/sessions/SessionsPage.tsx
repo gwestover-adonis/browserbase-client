@@ -12,7 +12,7 @@ import { SessionDetail } from "./SessionDetail";
 import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
 import { columns } from "./columns";
 import type { PropertyFilters } from "@/lib/property-filters";
-import { EMPTY_FILTERS } from "@/lib/property-filters";
+import { defaultFilters } from "@/lib/property-filters";
 import { useMetadataSchema } from "@/lib/metadata-schema";
 
 export function SessionsPage() {
@@ -22,7 +22,7 @@ export function SessionsPage() {
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [lastQuery, setLastQuery] = useState<SessionsQueryParams | undefined>();
-  const [propertyFilters, setPropertyFilters] = useState<PropertyFilters>(EMPTY_FILTERS);
+  const [propertyFilters, setPropertyFilters] = useState<PropertyFilters>(defaultFilters);
   const { keyPaths, valuesForKey } = useMetadataSchema(sessions);
   const filtersRef = useRef<SessionFiltersHandle>(null);
 
