@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { SessionFilters, type SessionFiltersHandle } from "./SessionFilters";
 import { SessionTable } from "./SessionTable";
 import { SessionDetail } from "./SessionDetail";
@@ -54,8 +55,8 @@ export function SessionsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-end justify-between gap-4">
+    <div className="h-full flex flex-col gap-6 overflow-hidden">
+      <div className="flex items-end justify-between gap-4 shrink-0">
         <div className="flex-1">
           <SessionFilters
             ref={filtersRef}
@@ -67,11 +68,6 @@ export function SessionsPage() {
           />
         </div>
         <div className="flex items-center gap-2">
-          {!isLoading && sessions.length > 0 && (
-            <span className="text-sm text-muted-foreground whitespace-nowrap">
-              {sessions.length} session{sessions.length !== 1 ? "s" : ""}
-            </span>
-          )}
           <Button onClick={() => filtersRef.current?.search()} disabled={isLoading}>
             <Search className="mr-1.5 size-4" />
             Search
@@ -95,19 +91,19 @@ export function SessionsPage() {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive shrink-0">
           {error}
         </div>
       )}
 
       {isLoading && sessions.length === 0 ? (
-        <div className="flex h-48 flex-col items-center justify-center gap-3 text-muted-foreground">
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-muted-foreground">
           <Spinner className="size-6" />
           <span className="text-sm">Loading sessions...</span>
         </div>
       ) : (
-        <Tabs defaultValue="table">
-          <TabsList variant="line">
+        <Tabs defaultValue="table" className="flex-1 flex flex-col overflow-hidden min-h-0">
+          <TabsList variant="line" className="shrink-0">
             <TabsTrigger value="table">
               <TableProperties className="size-3.5" />
               Sessions
@@ -118,7 +114,7 @@ export function SessionsPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="table">
+          <TabsContent value="table" className="flex-1 overflow-hidden min-h-0">
             <SessionTable
               columns={columns}
               data={sessions}
@@ -128,12 +124,14 @@ export function SessionsPage() {
             />
           </TabsContent>
 
-          <TabsContent value="analytics">
-            <AnalyticsDashboard
-              sessions={sessions}
-              statusFilter={statusFilter}
-              propertyFilters={propertyFilters}
-            />
+          <TabsContent value="analytics" className="flex-1 overflow-hidden min-h-0">
+            <ScrollArea className="h-full overflow-hidden">
+              <AnalyticsDashboard
+                sessions={sessions}
+                statusFilter={statusFilter}
+                propertyFilters={propertyFilters}
+              />
+            </ScrollArea>
           </TabsContent>
         </Tabs>
       )}

@@ -8,9 +8,9 @@ function AppContent() {
   const { selected } = useProject();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden">
       <Header />
-      <main className="container mx-auto px-4 py-6">
+      <main className="flex-1 overflow-hidden container mx-auto px-4 py-6">
         {selected && <SessionsPage key={selected} />}
       </main>
     </div>
