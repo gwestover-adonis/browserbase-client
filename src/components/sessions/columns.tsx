@@ -5,17 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import type { Session } from "@/lib/types";
 import { formatBytes, formatDuration, formatRelativeTime } from "@/lib/format";
 import { getSessionReplayUrl } from "@/lib/api";
+import { getStatusConfig } from "@/lib/status";
+import { cn } from "@/lib/utils";
 import { CopyableId } from "./CopyableId";
-
-const statusVariant: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  RUNNING: "default",
-  COMPLETED: "secondary",
-  ERROR: "destructive",
-  TIMED_OUT: "outline",
-};
 
 export const columns: ColumnDef<Session>[] = [
   {
@@ -23,8 +15,14 @@ export const columns: ColumnDef<Session>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue<string>("status");
+      const cfg = getStatusConfig(status);
       return (
-        <Badge variant={statusVariant[status] ?? "outline"}>{status}</Badge>
+        <div className="flex items-center gap-2">
+          <div className={cn("w-1 self-stretch rounded-full shrink-0", cfg.accentClass)} />
+          <Badge variant={cfg.badgeVariant} className={cn("border", cfg.className)}>
+            {cfg.label}
+          </Badge>
+        </div>
       );
     },
     filterFn: (row, _columnId, filterValue) => {
@@ -49,7 +47,7 @@ export const columns: ColumnDef<Session>[] = [
         <ArrowUpDown className="ml-1 size-3" />
       </Button>
     ),
-    cell: ({ row }) => formatRelativeTime(row.getValue("createdAt")),
+    cell: ({ row }) => <span className="font-mono">{formatRelativeTime(row.getValue("createdAt"))}</span>,
     sortingFn: "datetime",
     filterFn: (row, _columnId, filterValue) => {
       const { after, before } = filterValue as {
@@ -81,8 +79,9 @@ export const columns: ColumnDef<Session>[] = [
         <ArrowUpDown className="ml-1 size-3" />
       </Button>
     ),
-    cell: ({ row }) =>
-      formatDuration(row.original.startedAt, row.original.endedAt),
+    cell: ({ row }) => (
+      <span className="font-mono">{formatDuration(row.original.startedAt, row.original.endedAt)}</span>
+    ),
     sortingFn: (rowA, rowB) => {
       const a = rowA.getValue<number | null>("duration") ?? 0;
       const b = rowB.getValue<number | null>("duration") ?? 0;
@@ -101,7 +100,7 @@ export const columns: ColumnDef<Session>[] = [
     accessorKey: "region",
     header: "Region",
     cell: ({ row }) => (
-      <span className="text-xs">{row.getValue<string>("region") || "-"}</span>
+      <span className="font-mono text-xs">{row.getValue<string>("region") || "-"}</span>
     ),
     filterFn: (row, _columnId, filterValue) => {
       const regions = filterValue as string[];
@@ -121,7 +120,7 @@ export const columns: ColumnDef<Session>[] = [
         <ArrowUpDown className="ml-1 size-3" />
       </Button>
     ),
-    cell: ({ row }) => formatBytes(row.getValue<number>("proxyBytes") ?? 0),
+    cell: ({ row }) => <span className="font-mono">{formatBytes(row.getValue<number>("proxyBytes") ?? 0)}</span>,
     filterFn: (row, _columnId, filterValue) => {
       const bytes = row.getValue<number>("proxyBytes") ?? 0;
       const { min, max } = filterValue as { min?: number; max?: number };
