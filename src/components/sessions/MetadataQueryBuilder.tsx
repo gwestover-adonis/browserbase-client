@@ -16,6 +16,11 @@ import {
 import type { MetadataCondition } from "@/lib/metadata-query";
 import { createCondition } from "@/lib/metadata-query";
 
+// Cap how many value suggestions render into the DOM. A metadata field can have
+// thousands of unique values (e.g. IDs); base-ui still filters the full list as
+// the user types, but only renders up to this many at once.
+const MAX_VALUE_SUGGESTIONS = 100;
+
 interface MetadataQueryBuilderProps {
   conditions: MetadataCondition[];
   onChange: (conditions: MetadataCondition[]) => void;
@@ -137,6 +142,15 @@ function ConditionRow({
     if (e.key === "Enter") onSearch();
   }
 
+  // Mirror base-ui's default case-insensitive substring filter to know how many
+  // values match the current input, so we can flag when the list is truncated.
+  const query = condition.value ?? "";
+  const matchCount = query
+    ? valueSuggestions.filter((v) => v.toLowerCase().includes(query.toLowerCase()))
+        .length
+    : valueSuggestions.length;
+  const valuesTruncated = matchCount > MAX_VALUE_SUGGESTIONS;
+
   return (
     <div className="flex items-center gap-2">
       {index > 0 && (
@@ -176,6 +190,7 @@ function ConditionRow({
 
       <Combobox
         items={valueSuggestions}
+        limit={MAX_VALUE_SUGGESTIONS}
         value={condition.value || null}
         onValueChange={(val) => onUpdateValue(val ?? "")}
         onInputValueChange={(inputVal) => onUpdateValue(inputVal)}
@@ -196,6 +211,12 @@ function ConditionRow({
                 </ComboboxItem>
               )}
             </ComboboxList>
+            {valuesTruncated && (
+              <div className="border-t border-border px-2 py-1.5 text-xs text-muted-foreground">
+                Showing first {MAX_VALUE_SUGGESTIONS} of {matchCount}. Type to
+                narrow.
+              </div>
+            )}
           </ComboboxContent>
         )}
       </Combobox>
