@@ -10,6 +10,8 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import type { Table as ReactTable } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -19,6 +21,52 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+function getPageNumbers(current: number, total: number): (number | "…")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, "…", total];
+  if (current >= total - 3) return [1, "…", total - 4, total - 3, total - 2, total - 1, total];
+  return [1, "…", current - 1, current, current + 1, "…", total];
+}
+
+function Pagination<T>({ table }: { table: ReactTable<T> }) {
+  const current = table.getState().pagination.pageIndex + 1;
+  const total = table.getPageCount();
+  if (total <= 1) return null;
+  const pages = getPageNumbers(current, total);
+  return (
+    <div className="flex items-center gap-1">
+      <Button variant="outline" size="icon" className="size-8" onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
+        <ChevronsLeft className="size-4" />
+      </Button>
+      <Button variant="outline" size="icon" className="size-8" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+        <ChevronLeft className="size-4" />
+      </Button>
+      {pages.map((p, i) =>
+        p === "…" ? (
+          <span key={`ellipsis-${i}`} className="px-1 text-sm text-muted-foreground select-none">…</span>
+        ) : (
+          <Button
+            key={p}
+            variant={p === current ? "default" : "outline"}
+            size="icon"
+            className="size-8 text-xs"
+            onClick={() => table.setPageIndex((p as number) - 1)}
+          >
+            {p}
+          </Button>
+        )
+      )}
+      <Button variant="outline" size="icon" className="size-8" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+        <ChevronRight className="size-4" />
+      </Button>
+      <Button variant="outline" size="icon" className="size-8" onClick={() => table.setPageIndex(total - 1)} disabled={!table.getCanNextPage()}>
+        <ChevronsRight className="size-4" />
+      </Button>
+    </div>
+  );
+}
 import type { PropertyFilters } from "@/lib/property-filters";
 
 const PROPERTY_FILTER_COLUMNS = [
@@ -124,8 +172,8 @@ export function SessionTable<TData, TValue>({
   });
 
   return (
-    <div>
-      <div className="overflow-hidden rounded-lg border">
+    <div className="h-full flex flex-col">
+      <ScrollArea className="flex-1 min-h-0 rounded-lg border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -173,30 +221,13 @@ export function SessionTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-      </div>
+      </ScrollArea>
 
-      <div className="flex items-center justify-between py-4">
+      <div className="flex items-center justify-between py-4 shrink-0">
         <p className="text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} session(s) total
+          {table.getFilteredRowModel().rows.length} of {data.length} sessions
         </p>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        <Pagination table={table} />
       </div>
     </div>
   );

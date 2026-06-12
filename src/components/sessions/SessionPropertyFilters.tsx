@@ -27,7 +27,7 @@ import {
 import type { PropertyFilters } from "@/lib/property-filters";
 import {
   KNOWN_REGIONS,
-  EMPTY_FILTERS,
+  defaultFilters,
   isFiltersActive,
 } from "@/lib/property-filters";
 
@@ -111,7 +111,7 @@ export function SessionPropertyFilters({
   }
 
   function clearAll() {
-    onChange(EMPTY_FILTERS);
+    onChange(defaultFilters());
   }
 
   const hasCreated =
