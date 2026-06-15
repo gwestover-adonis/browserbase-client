@@ -14,16 +14,16 @@ export function formatDuration(startedAt: string | null, endedAt: string | null)
 
   if (diffMs < 1000) return `${diffMs}ms`;
 
-  const seconds = Math.floor(diffMs / 1000);
-  if (seconds < 60) return `${seconds}s`;
+  const totalSeconds = Math.floor(diffMs / 1000);
+  if (totalSeconds < 60) return `${totalSeconds}s`;
 
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  if (minutes < 60) return `${minutes}m ${remainingSeconds}s`;
+  const minutes = Math.floor(totalSeconds / 60);
+  const secs = totalSeconds % 60;
+  if (minutes < 60) return `${minutes}m ${secs}s`;
 
   const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-  return `${hours}h ${remainingMinutes}m`;
+  const mins = minutes % 60;
+  return `${hours}h ${mins}m ${secs}s`;
 }
 
 export function formatTimestamp(iso: string | null): string {

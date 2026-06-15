@@ -200,7 +200,7 @@ export function SessionTable<TData, TValue>({
                   onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-1.5">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),

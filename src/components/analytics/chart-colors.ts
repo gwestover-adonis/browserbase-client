@@ -1,10 +1,11 @@
 import type { SessionStatus } from "@/lib/types";
+import { STATUS_CONFIG } from "@/lib/status";
 
 export const STATUS_COLORS: Record<SessionStatus, string> = {
-  COMPLETED: "var(--chart-status-completed)",
-  RUNNING: "var(--chart-status-running)",
-  ERROR: "var(--chart-status-error)",
-  TIMED_OUT: "var(--chart-status-timed-out)",
+  COMPLETED: STATUS_CONFIG.COMPLETED.chartColor,
+  RUNNING: STATUS_CONFIG.RUNNING.chartColor,
+  ERROR: STATUS_CONFIG.ERROR.chartColor,
+  TIMED_OUT: STATUS_CONFIG.TIMED_OUT.chartColor,
 };
 
 // Hue-shifted palette for metadata grouping (10 distinguishable colors)

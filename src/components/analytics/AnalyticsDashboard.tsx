@@ -19,10 +19,16 @@ import { MetadataGrouping } from "./MetadataGrouping";
 import { ConcurrencyChart } from "./ConcurrencyChart";
 import { FrequencyChart } from "./FrequencyChart";
 
+interface BrushRange {
+  startDate: string;
+  endDate: string;
+}
+
 interface AnalyticsDashboardProps {
   sessions: Session[];
   statusFilter: string;
   propertyFilters: PropertyFilters;
+  onBrush?: (range: BrushRange | null) => void;
 }
 
 function formatAvgDuration(sessions: Session[]): string {
@@ -43,6 +49,7 @@ export function AnalyticsDashboard({
   sessions,
   statusFilter,
   propertyFilters,
+  onBrush,
 }: AnalyticsDashboardProps) {
   const filtered = useMemo(
     () => filterSessions(sessions, statusFilter, propertyFilters),
@@ -71,7 +78,7 @@ export function AnalyticsDashboard({
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <VolumeChart data={volume} />
+        <VolumeChart data={volume} onBrush={onBrush} />
         <StatusChart data={statusBreakdown} />
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
