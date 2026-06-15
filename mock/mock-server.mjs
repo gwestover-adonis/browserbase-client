@@ -20,7 +20,7 @@ function rng() {
 const pick = (arr) => arr[Math.floor(rng() * arr.length)];
 const randInt = (min, max) => Math.floor(rng() * (max - min + 1)) + min;
 
-function buildSessions(count = 130) {
+function buildSessions(count = 3000) {
   const now = Date.now();
   const sessions = [];
   for (let i = 0; i < count; i++) {
@@ -34,9 +34,13 @@ function buildSessions(count = 130) {
     const status = pick(STATUSES);
     const isRunning = status === "RUNNING";
     const startedMs = createdMs + randInt(200, 1500);
+    // ~15% of completed sessions are long-running (minutes to hours) to stress
+    // the Y-axis tick formatter into 4-digit / "k" territory.
+    const longRunning = status === "COMPLETED" && rng() < 0.15;
     const durationSec =
       status === "TIMED_OUT" ? randInt(280, 320)
       : status === "ERROR" ? randInt(2, 90)
+      : longRunning ? randInt(1800, 14400)
       : randInt(5, 240);
     const endedMs = isRunning ? null : startedMs + durationSec * 1000;
 
