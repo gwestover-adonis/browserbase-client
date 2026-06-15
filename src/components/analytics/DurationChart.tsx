@@ -49,6 +49,9 @@ export function DurationChart({ data }: DurationChartProps) {
             />
             <YAxis
               allowDecimals={false}
+              tickFormatter={(v: number) =>
+                v >= 1000 ? `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k` : String(v)
+              }
               className="text-xs fill-muted-foreground"
               tickLine={false}
               axisLine={false}

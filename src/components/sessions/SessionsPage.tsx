@@ -170,12 +170,14 @@ export function SessionsPage() {
 
             <TabsContent value="analytics" className="flex-1 overflow-hidden min-h-0">
               <ScrollArea className="h-full overflow-hidden">
+                <div className="p-4">
                 <AnalyticsDashboard
                   sessions={sessions}
                   statusFilter={statusFilter}
                   propertyFilters={propertyFilters}
                   onBrush={handleBrush}
                 />
+                </div>
               </ScrollArea>
             </TabsContent>
 
