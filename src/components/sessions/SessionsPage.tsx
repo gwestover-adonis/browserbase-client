@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { RefreshCw, Search, TableProperties, BarChart3, Radio } from "lucide-react";
+import { RefreshCw, Search, TableProperties, BarChart3, Radio, RadioTower, CircleStop } from "lucide-react";
 import { listSessions } from "@/lib/api";
 import type { Session, SessionsQueryParams } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -28,9 +28,10 @@ export function SessionsPage() {
   const [propertyFilters, setPropertyFilters] = useState<PropertyFilters>(defaultFilters);
   const [isStale, setIsStale] = useState(false);
   const [activeTab, setActiveTab] = useState("table");
+  const [liveEnabled, setLiveEnabled] = useState(false);
   const { keyPaths, valuesForKey } = useMetadataSchema(sessions);
   const filtersRef = useRef<SessionFiltersHandle>(null);
-  const liveSessions = useLiveRunning();
+  const liveSessions = useLiveRunning(liveEnabled);
 
   const fetchSessions = useCallback(async (params?: SessionsQueryParams) => {
     setIsLoading(true);
@@ -138,7 +139,7 @@ export function SessionsPage() {
             propertyFilters={propertyFilters}
           />
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden min-h-0">
-            <TabsList variant="line" className="shrink-0">
+            <TabsList variant="line" className="shrink-0 flex items-center">
               <TabsTrigger value="table">
                 <TableProperties className="size-3.5" />
                 Sessions
@@ -147,14 +148,44 @@ export function SessionsPage() {
                 <BarChart3 className="size-3.5" />
                 Analytics
               </TabsTrigger>
-              {liveSessions.length > 0 && (
-                <TabsTrigger value="live">
-                  <Radio className="size-3.5 animate-pulse" />
-                  Live
+              <TabsTrigger
+                value="live"
+                onClick={(e) => {
+                  if (activeTab === "live") {
+                    e.preventDefault();
+                    setLiveEnabled((v) => !v);
+                  } else {
+                    setLiveEnabled(true);
+                  }
+                }}
+              >
+                {liveEnabled ? (
+                  <RadioTower className="size-3.5 text-green-500 animate-pulse" />
+                ) : (
+                  <Radio className="size-3.5 text-muted-foreground" />
+                )}
+                Live
+                {liveEnabled && liveSessions.length > 0 && (
                   <span className="ml-1 rounded-full bg-current/20 px-1.5 py-0 text-[10px] font-mono tabular-nums">
                     {liveSessions.length}
                   </span>
-                </TabsTrigger>
+                )}
+              </TabsTrigger>
+              {liveEnabled && activeTab === "live" && (
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <button
+                        className="ml-auto mr-1 flex items-center gap-1.5 rounded px-2 py-1 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        onClick={() => setLiveEnabled(false)}
+                      >
+                        <CircleStop className="size-3.5" />
+                        Stop polling
+                      </button>
+                    }
+                  />
+                  <TooltipContent>Stop live polling</TooltipContent>
+                </Tooltip>
               )}
             </TabsList>
 
@@ -182,11 +213,24 @@ export function SessionsPage() {
             </TabsContent>
 
             <TabsContent value="live" className="flex-1 overflow-hidden min-h-0">
-              <SessionTable
-                columns={columns}
-                data={liveSessions}
-                onRowClick={setSelectedSession}
-              />
+              {liveEnabled ? (
+                <SessionTable
+                  columns={columns}
+                  data={liveSessions}
+                  onRowClick={setSelectedSession}
+                />
+              ) : (
+                <div className="flex flex-1 h-full flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <Radio className="size-6" />
+                  <span className="text-sm">Live polling is off</span>
+                  <button
+                    className="text-xs underline underline-offset-2 hover:text-foreground transition-colors"
+                    onClick={() => setLiveEnabled(true)}
+                  >
+                    Enable
+                  </button>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </>
