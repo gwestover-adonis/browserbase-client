@@ -1,8 +1,7 @@
 import { SessionsPage } from "@/components/sessions/SessionsPage";
 import { Header } from "@/components/layout/Header";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ProjectProvider } from "@/lib/project-provider";
-import { useProject } from "@/lib/use-project";
+import { ProjectProvider, useProject } from "@/lib/project-provider";
 
 function AppContent() {
   const { selected } = useProject();

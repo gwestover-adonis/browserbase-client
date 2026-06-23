@@ -4,13 +4,11 @@ export interface MetadataCondition {
   value: string;
 }
 
-let nextId = 0;
-
 export function createCondition(
   keyPath = "",
   value = "",
 ): MetadataCondition {
-  return { id: String(++nextId), keyPath, value };
+  return { id: crypto.randomUUID(), keyPath, value };
 }
 
 /**

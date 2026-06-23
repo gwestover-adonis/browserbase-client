@@ -18,6 +18,9 @@ dist-ssr
 # Claude
 .claude/screenshots/
 
+# Serena (local AI working state)
+.serena/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

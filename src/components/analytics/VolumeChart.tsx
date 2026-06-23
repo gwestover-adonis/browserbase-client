@@ -13,6 +13,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { VolumeDataPoint } from "@/lib/analytics";
 import { STATUS_COLORS } from "./chart-colors";
+import { formatDateLabel } from "@/lib/format";
 
 interface BrushRange {
   startDate: string;
@@ -22,13 +23,6 @@ interface BrushRange {
 interface VolumeChartProps {
   data: VolumeDataPoint[];
   onBrush?: (range: BrushRange | null) => void;
-}
-
-function formatDateLabel(date: string): string {
-  // "2024-01-15" → "Jan 15", "2024-W03" → "W03"
-  if (date.includes("W")) return date.split("-").slice(1).join("-");
-  const d = new Date(date + "T00:00:00");
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 export function VolumeChart({ data, onBrush }: VolumeChartProps) {

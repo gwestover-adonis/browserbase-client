@@ -16,11 +16,7 @@ import {
   queryToConditions,
 } from "@/lib/metadata-query";
 import type { PropertyFilters } from "@/lib/property-filters";
-import {
-  countActiveFilters,
-  defaultFilters,
-  KNOWN_REGIONS,
-} from "@/lib/property-filters";
+import { defaultFilters, KNOWN_REGIONS } from "@/lib/property-filters";
 import { STATUS_OPTIONS, getStatusConfig } from "@/lib/status";
 import {
   getSavedViews,
@@ -203,11 +199,10 @@ export function SessionFilters({
     setSavedViews(getSavedViews());
   }
 
-  const propertyPillCount = countActiveFilters(propertyFilters);
+  const pills = getActivePropertyPills(propertyFilters);
   const metadataActive = getQueryString() != null;
   const statusActive = status !== "ALL";
-  const totalCount = propertyPillCount + (metadataActive ? 1 : 0) + (statusActive ? 1 : 0);
-  const pills = getActivePropertyPills(propertyFilters);
+  const totalCount = pills.length + (metadataActive ? 1 : 0) + (statusActive ? 1 : 0);
 
   return (
     <div className="space-y-2">

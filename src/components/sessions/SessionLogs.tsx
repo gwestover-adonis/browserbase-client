@@ -6,22 +6,10 @@ import { getSessionLogs } from "@/lib/api";
 import type { SessionLog } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatLogTime } from "@/lib/format";
 
 interface SessionLogsProps {
   sessionId: string;
-}
-
-function formatLogTime(ts: string): string {
-  try {
-    return new Date(ts).toLocaleTimeString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      fractionalSecondDigits: 3,
-    });
-  } catch {
-    return ts;
-  }
 }
 
 function summarize(log: SessionLog): string {

@@ -11,7 +11,7 @@ import { SessionFilters, type SessionFiltersHandle } from "./SessionFilters";
 import { SessionTable } from "./SessionTable";
 import { SessionDetail } from "./SessionDetail";
 import { MetricsStrip } from "./MetricsStrip";
-import { useLiveRunning } from "./LiveRunningStrip";
+import { useLiveRunning } from "./useLiveRunning";
 import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
 import { columns } from "./columns";
 import type { PropertyFilters } from "@/lib/property-filters";

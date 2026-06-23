@@ -22,29 +22,18 @@ export function defaultFilters(): PropertyFilters {
   return { regions: [...KNOWN_REGIONS], createdAfter };
 }
 
-function isRegionFilterActive(regions: string[] | undefined): boolean {
-  if (regions == null || regions.length === 0) return true;
-  if (regions.length === KNOWN_REGIONS.length) return false;
-  return true;
-}
-
 export function isFiltersActive(filters: PropertyFilters): boolean {
+  const regionActive =
+    filters.regions != null &&
+    filters.regions.length > 0 &&
+    filters.regions.length < KNOWN_REGIONS.length;
   return (
     filters.createdAfter != null ||
     filters.createdBefore != null ||
     filters.durationMin != null ||
     filters.durationMax != null ||
-    isRegionFilterActive(filters.regions) ||
+    regionActive ||
     filters.proxyBytesMin != null ||
     filters.proxyBytesMax != null
   );
-}
-
-export function countActiveFilters(filters: PropertyFilters): number {
-  let count = 0;
-  if (filters.createdAfter != null || filters.createdBefore != null) count++;
-  if (filters.durationMin != null || filters.durationMax != null) count++;
-  if (isRegionFilterActive(filters.regions)) count++;
-  if (filters.proxyBytesMin != null || filters.proxyBytesMax != null) count++;
-  return count;
 }

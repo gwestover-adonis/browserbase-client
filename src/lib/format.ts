@@ -49,3 +49,33 @@ export function formatRelativeTime(iso: string | null): string {
 
   return date.toLocaleDateString();
 }
+
+export function formatLogTime(ts: string): string {
+  try {
+    return new Date(ts).toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      fractionalSecondDigits: 3,
+    });
+  } catch {
+    return ts;
+  }
+}
+
+export function formatDateLabel(date: string): string {
+  if (date.includes("W")) return date.split("-").slice(1).join("-");
+  const d = new Date(date + "T00:00:00");
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+export function formatPeakTime(iso: string | null): string {
+  if (!iso) return "-";
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}

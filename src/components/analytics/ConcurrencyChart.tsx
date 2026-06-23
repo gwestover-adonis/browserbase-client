@@ -9,22 +9,11 @@ import {
 } from "recharts";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import type { ConcurrencyDataPoint, ConcurrencySummary } from "@/lib/analytics";
+import { formatPeakTime } from "@/lib/format";
 
 interface ConcurrencyChartProps {
   data: ConcurrencyDataPoint[];
   summary: ConcurrencySummary;
-}
-
-function formatPeakTime(iso: string | null): string {
-  if (!iso) return "-";
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
 }
 
 function formatTickLabel(epochMs: number, data: ConcurrencyDataPoint[]): string {
